@@ -310,17 +310,17 @@ void displayBill(const splitHistory& data) {
     cout << "User: " << data.user << "\n";
     cout << "PromptPay: " << data.numberPromptPay << "\n";
     cout << "Number of People: " << data.numberPeople << "\n";
-    cout << "------ Menus ------\n";
+    cout << "---------- Menus ---------\n";
     for (const auto& item : data.menuPrice) {
         cout << item.first << " : " << fixed << setprecision(2) << item.second << " THB\n";
     }
-    cout << "--------------------\n";
+    cout << "--------------------------\n";
     cout << "Discount: " << data.discount << " THB\n";
     cout << "Total (before tax): " << data.totalBath << " THB\n";
     cout << "Tax (" << fixed << setprecision(2) << data.taxRate << "%): " 
          << fixed << setprecision(2) << (data.taxRate / 100) * data.totalBath << " THB\n";
     cout << "Total (after tax): " << data.VATable << " THB\n";
-    cout << "------ Payment Details ------\n";
+    cout << "----- Payment Details ----\n";
     for (const auto& entry : data.personPayment) {
         cout << entry.first << " owes: " << fixed << setprecision(2) << entry.second << " THB\n";
     }
@@ -336,20 +336,30 @@ void viewHistory(const vector<splitHistory>& historyList) {
     for (const auto& record : historyList) {
         displayBill(record);
     }
-    cout << "===== End of History =====\n";
+    cout << "----- End of History -----\n";
 }
 
 int main() {
     vector<splitHistory> historyList = loadFromFile();
     while (true) {
-        cout << "\n===== Main Menu =====\n";
+        cout << "\n======= Main Menu ========\n";
         cout << "1. Add New Record\n";
         cout << "2. View History\n";
         cout << "3. Exit\n";
+        cout << "==========================\n";
         cout << "Enter your choice (1-3): ";
+
         int choice;
         cin >> choice;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        if (cin.fail() || choice < 1 || choice > 3) { 
+            cin.clear();  // ล้างสถานะข้อผิดพลาด
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');  // ล้างค่าที่ป้อนผิดพลาด
+            cout << "Invalid choice! Please enter an integer between 1-3.\n";
+            continue;
+        }
+
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');  // ล้างค่าเพิ่มเติมหลังจากรับค่า int
 
         if (choice == 1) {
             splitHistory newRecord = getNewRecord(historyList);
@@ -361,8 +371,6 @@ int main() {
         } else if (choice == 3) {
             cout << "Exiting program...\n";
             break;
-        } else {
-            cout << "Invalid choice. Please try again.\n";
         }
     }
     return 0;
