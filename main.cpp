@@ -71,7 +71,7 @@ string getCurrent() { // ฟังก์ชันดึงเวลาปัจ�
     time_t currentTime = system_clock::to_time_t(now); // แปลงค่า time_point เป็น time_t -> เป็นค่าที่ใช้เก็บเวลาในหน่วยวินาทีตั้งแต่ปี 1970
     stringstream ss; // ใช้ stingstream สร้าง string ของวันที่และเวลา
     ss << put_time(localtime(&currentTime), "%d/%m/%Y %H:%M"); // format วัน/เดือน/ปี ชั่วโมง/นาที เก็บไว้ใน ss
-    return ss.str(); //คืนค่าเป็น string
+    return ss.str(); // คืนค่าเป็น string
 }
 
 vector<splitHistory> loadFromFile() { // ฟังก์ชันโหลดข้อมูลจากไฟล์ JSON
@@ -225,27 +225,11 @@ splitHistory getNewRecord(const vector<splitHistory>& historyList) { // ฟั�
 
         data.totalBath += price;
 
-        /*cout << "Enter the names of " << numPeople << " people sharing " << menuName << ":\n";
+        cout << "Enter the names of " << numPeople << " people sharing " << menuName << ":\n";
         for (int j = 0; j < numPeople; j++) {
             cin >> ws;
             getline(cin, people[j]);
             data.personPayment[people[j]] += splitPrice;
-        }*/
-    
-        cout << "Enter the names of " << numPeople << " people sharing " << menuName << ":\n";
-        for (int j = 0; j < numPeople; j++) {
-        cin >> ws;
-        getline(cin, people[j]);
-
-        // แปลงชื่อเป็นตัวพิมพ์เล็กทั้งหมด
-        /*string lowerName = people[j];
-        transform(lowerName.begin(), lowerName.end(), lowerName.begin(), ::tolower);*/
-
-        string upperName = people[j];
-        transform(upperName.begin(), upperName.end(), upperName.begin(), ::toupper);
-
-        // ใช้ชื่อที่แปลงแล้วเป็นคีย์ใน map
-        data.personPayment[upperName] += splitPrice;
         }
     }
     double discount;
@@ -320,30 +304,44 @@ void displayBill(const splitHistory& data) { // ฟังก์ชันแส�
     cout << "==========================\n";
 }
 
+void viewHistory(const vector<splitHistory>& historyList) {
+    if (historyList.empty()) {
+        cout << "\nNo history records found.\n";
+        return;
+    }
+    cout << "\n===== History Records =====\n";
+    for (const auto& record : historyList) {
+        displayBill(record);
+    }
+    cout << "===== End of History =====\n";
+}
+
 int main() {
     vector<splitHistory> historyList = loadFromFile();
-
-    splitHistory newRecord = getNewRecord(historyList);
-    historyList.push_back(newRecord);
-    displayBill(newRecord);
-    saveToFile(historyList);
-
     while (true) {
-        string userInput;
-        cout << "\nType 'Exit' to quit or press Enter to add a new record: ";
-        cin >> ws;
-        getline(cin, userInput);
+        cout << "\n===== Main Menu =====\n";
+        cout << "1. Add New Record\n";
+        cout << "2. View History\n";
+        cout << "3. Exit\n";
+        cout << "=====================\n";
+        cout << "Enter your choice (1-3): ";
+        int choice;
+        cin >> choice;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-        if (userInput == "Exit" || userInput == "exit") {
+        if (choice == 1) {
+            splitHistory newRecord = getNewRecord(historyList);
+            historyList.push_back(newRecord);
+            displayBill(newRecord);
+            saveToFile(historyList);
+        } else if (choice == 2) {
+            viewHistory(historyList);
+        } else if (choice == 3) {
             cout << "Exiting program...\n";
             break;
+        } else {
+            cout << "Invalid choice. Please try again.\n";
         }
-
-        newRecord = getNewRecord(historyList);
-        historyList.push_back(newRecord);
-        displayBill(newRecord);
-        saveToFile(historyList);
     }
-
     return 0;
 }
