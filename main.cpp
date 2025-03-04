@@ -225,11 +225,27 @@ splitHistory getNewRecord(const vector<splitHistory>& historyList) { // ฟั�
 
         data.totalBath += price;
 
-        cout << "Enter the names of " << numPeople << " people sharing " << menuName << ":\n";
+        /*cout << "Enter the names of " << numPeople << " people sharing " << menuName << ":\n";
         for (int j = 0; j < numPeople; j++) {
             cin >> ws;
             getline(cin, people[j]);
             data.personPayment[people[j]] += splitPrice;
+        }*/
+    
+        cout << "Enter the names of " << numPeople << " people sharing " << menuName << ":\n";
+        for (int j = 0; j < numPeople; j++) {
+        cin >> ws;
+        getline(cin, people[j]);
+
+        // แปลงชื่อเป็นตัวพิมพ์เล็กทั้งหมด
+        /*string lowerName = people[j];
+        transform(lowerName.begin(), lowerName.end(), lowerName.begin(), ::tolower);*/
+
+        string upperName = people[j];
+        transform(upperName.begin(), upperName.end(), upperName.begin(), ::toupper);
+
+        // ใช้ชื่อที่แปลงแล้วเป็นคีย์ใน map
+        data.personPayment[upperName] += splitPrice;
         }
     }
     double discount;
