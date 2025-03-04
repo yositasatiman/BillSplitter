@@ -349,7 +349,7 @@ int main() {
         cout << "==========================\n";
         cout << "Enter your choice (1-3): ";
 
-        int choice;
+        char choice;
         cin >> choice;
 
         if (cin.fail() || choice < 1 || choice > 3) { 
@@ -361,14 +361,14 @@ int main() {
 
         cin.ignore(numeric_limits<streamsize>::max(), '\n');  // ล้างค่าเพิ่มเติมหลังจากรับค่า int
 
-        if (choice == 1) {
+        if (choice == '1') {
             splitHistory newRecord = getNewRecord(historyList);
             historyList.push_back(newRecord);
             displayBill(newRecord);
             saveToFile(historyList);
-        } else if (choice == 2) {
+        } else if (choice == '2') {
             viewHistory(historyList);
-        } else if (choice == 3) {
+        } else if (choice == '3') {
             cout << "Exiting program...\n";
             break;
         }
