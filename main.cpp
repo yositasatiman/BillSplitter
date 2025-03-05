@@ -24,7 +24,7 @@ struct splitHistory {
     map<string, double> personPayment;
     double totalBath;
     double discount;
-    string numberPromptPay;  // ใช้ string เพื่อรองรับเบอร์ 10 หลัก
+    string numberPromptPay;
     double taxRate;
     double VATable;
 
@@ -56,14 +56,13 @@ struct splitHistory {
         data.personPayment = j.value("personPayment", map<string, double>{});
         j.at("totalBath").get_to(data.totalBath);
         j.at("discount").get_to(data.discount);
-        
-        // ตรวจสอบฟิลด์ numberPromptPay หากเป็น string หรือ number
+
         if (j.at("numberPromptPay").is_string()) {
             j.at("numberPromptPay").get_to(data.numberPromptPay);
         } else if (j.at("numberPromptPay").is_number()) {
             data.numberPromptPay = to_string(j.at("numberPromptPay").get<long long>());
         }
-        
+
         j.at("taxRate").get_to(data.taxRate);
         j.at("VATable").get_to(data.VATable);
         return data;
@@ -143,7 +142,6 @@ splitHistory getNewRecord(const vector<splitHistory>& historyList) {
     cin >> ws;
     getline(cin, data.user);
 
-    // รับข้อมูล PromptPay เป็นเบอร์ 10 หลัก
     while (true) {
         cout << "Please enter your PromptPay number (10 digits): ";
         cin >> data.numberPromptPay;
@@ -236,28 +234,16 @@ splitHistory getNewRecord(const vector<splitHistory>& historyList) {
         vector<string> people(numPeople);
         double splitPrice = price / numPeople;
         data.totalBath += price;
-        /*cout << "Enter the names of " << numPeople << " people sharing " << menuName << ":\n";
-        for (int j = 0; j < numPeople; j++) {
-            cin >> ws;
-            getline(cin, people[j]);
-            data.personPayment[people[j]] += splitPrice;
-        }*/
-    
 
         cout << "Enter the names of " << numPeople << " people sharing " << menuName << ":\n";
         for (int j = 0; j < numPeople; j++) {
-        cin >> ws;
-        getline(cin, people[j]);
+            cin >> ws;
+            getline(cin, people[j]);
 
-        // แปลงชื่อเป็นตัวพิมพ์เล็กทั้งหมด
-        /*string lowerName = people[j];
-        transform(lowerName.begin(), lowerName.end(), lowerName.begin(), ::tolower);*/
+            string upperName = people[j];
+            transform(upperName.begin(), upperName.end(), upperName.begin(), ::toupper);
 
-        string upperName = people[j];
-        transform(upperName.begin(), upperName.end(), upperName.begin(), ::toupper);
-
-        // ใช้ชื่อที่แปลงแล้วเป็นคีย์ใน map
-        data.personPayment[upperName] += splitPrice;
+            data.personPayment[upperName] += splitPrice;
         }
     }
     
@@ -325,6 +311,8 @@ void displayBill(const splitHistory& data) {
         cout << entry.first << " owes: " << fixed << setprecision(2) << entry.second << " THB\n";
     }
     cout << "==========================\n";
+    cout << "Scan this QR Code to make a payment:\n";
+    cout << "<img src=\"https://promptpay.io/" << data.numberPromptPay << "\">\n";
 }
 
 void viewHistory(const vector<splitHistory>& historyList) {
@@ -353,13 +341,13 @@ int main() {
         cin >> choice;
 
         if (cin.fail() || choice < 1 || choice > 3) { 
-            cin.clear();  // ล้างสถานะข้อผิดพลาด
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');  // ล้างค่าที่ป้อนผิดพลาด
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cout << "Invalid choice! Please enter an integer between 1-3.\n";
             continue;
         }
 
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');  // ล้างค่าเพิ่มเติมหลังจากรับค่า int
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
         if (choice == 1) {
             splitHistory newRecord = getNewRecord(historyList);
